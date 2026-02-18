@@ -1,240 +1,531 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Reloj mundial</title>
+  <title>World Clock Board</title>
   <style>
     * {
-  box-sizing: border-box;
-}
+      box-sizing: border-box;
+    }
 
-html, body {
-  height: 100%;
-  margin: 0;
-}
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #1a1a1a;
-  color: #e0e0e0;
-  display: flex;
-  flex-direction: column;
-}
+    body {
+      font-family: system-ui, sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+    }
 
-h1 {
-  text-align: center;
-  margin: 16px 0;
-  flex: 0 0 auto;
-  color: #ffffff;
-  font-size: clamp(20px, 3vw, 32px);
-}
+    h1 {
+      text-align: center;
+      margin: 16px 0;
+      color: #ffffff;
+      font-size: clamp(20px, 3vw, 32px);
+    }
 
-#container {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+    #container {
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-#clocks {
-  flex: 1 1 auto;
-  display: grid;
-  gap: clamp(8px, 1.5vw, 20px);
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  grid-auto-rows: 1fr;
-  overflow-y: auto;
-  padding: 4px;
-}
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
 
-.clock {
-  background: #2d2d2d;
-  border-radius: 20px;
-  padding: clamp(16px, 3vw, 32px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #3a3a3a;
-  min-height: 120px;
-  transition: all 0.3s ease;
-}
+    #locationSearch,
+    #locationSelect,
+    #addLocationBtn {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
 
-.clock:hover {
-  border-color: #555;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-}
+    #locationSearch {
+      min-width: 230px;
+      flex: 1 1 260px;
+    }
 
-.place {
-  font-weight: 600;
-  font-size: clamp(16px, 2vw, 28px);
-  margin-bottom: clamp(8px, 1vw, 12px);
-  text-align: center;
-  color: #ffffff;
-  line-height: 1.2;
-}
+    #locationSelect {
+      min-width: 240px;
+      flex: 1 1 280px;
+    }
 
-.tz {
-  font-size: clamp(11px, 1.5vw, 16px);
-  color: #999;
-  margin-bottom: clamp(12px, 2vw, 20px);
-  text-align: center;
-}
+    #addLocationBtn {
+      cursor: pointer;
+    }
 
-.time {
-  font-family: monospace;
-  font-size: clamp(24px, 5vw, 48px);
-  letter-spacing: 2px;
-  font-weight: 600;
-  color: #666666;
-  transition: color 0.3s ease;
-}
+    #addLocationBtn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
 
-.time.working {
-  color: #4caf50;
-}
+    #limitInfo {
+      color: #999;
+      font-size: 13px;
+    }
 
-.work-status {
-  font-size: clamp(11px, 1.5vw, 14px);
-  color: #999;
-  margin-top: 8px;
-  text-align: center;
-}
+    #clocks {
+      flex: 1 1 auto;
+      display: grid;
+      gap: clamp(8px, 1.5vw, 20px);
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-auto-rows: 1fr;
+      overflow-y: auto;
+      padding: 4px;
+    }
 
-@media (max-width: 768px) {
-  #clocks {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  }
-}
+    .clock {
+      background: #2d2d2d;
+      border-radius: 20px;
+      padding: clamp(16px, 3vw, 32px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #3a3a3a;
+      min-height: 140px;
+      transition: all 0.3s ease;
+    }
 
-@media (max-width: 480px) {
-  #clocks {
-    grid-template-columns: 1fr;
-  }
-  
-  .clock {
-    min-height: 100px;
-  }
-}
+    .clock:hover {
+      border-color: #555;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .place {
+      font-weight: 600;
+      font-size: clamp(16px, 2vw, 28px);
+      margin-bottom: clamp(8px, 1vw, 12px);
+      text-align: center;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .tz {
+      font-size: clamp(11px, 1.5vw, 16px);
+      color: #999;
+      margin-bottom: clamp(12px, 2vw, 20px);
+      text-align: center;
+    }
+
+    .time {
+      font-family: monospace;
+      font-size: clamp(24px, 5vw, 48px);
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: #666666;
+      transition: color 0.3s ease;
+    }
+
+    .time.working {
+      color: #4caf50;
+    }
+
+    .time.near-shift {
+      color: #ffca28;
+    }
+
+    .work-status {
+      font-size: clamp(11px, 1.5vw, 14px);
+      color: #999;
+      margin-top: 8px;
+      text-align: center;
+      min-height: 1.2em;
+    }
+
+    .work-controls {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .work-controls label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: #b0b0b0;
+      min-width: 88px;
+    }
+
+    .work-controls input {
+      height: 32px;
+      background: #1f1f1f;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 4px 6px;
+    }
+
+    .remove-btn {
+      height: 32px;
+      background: #452121;
+      color: #f3d6d6;
+      border: 1px solid #7a3a3a;
+      border-radius: 8px;
+      padding: 0 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      #clocks {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      #clocks {
+        grid-template-columns: 1fr;
+      }
+
+      .clock {
+        min-height: 120px;
+      }
+    }
   </style>
 </head>
 <body>
-
-<h1>Team Working Hours 🌍</h1>
-
-<div id="container">
+  <h1>Team Working Hours</h1>
+  <div id="container">
+    <div id="controls">
+      <input id="locationSearch" type="text" placeholder="Type country, city, or timezone" />
+      <select id="locationSelect"></select>
+      <button id="addLocationBtn" type="button">Add Location</button>
+      <span id="limitInfo"></span>
+    </div>
     <div id="clocks"></div>
-</div>
+  </div>
 
-<script>
-  const locations = [
-    { name: "United States (ET)", tz: "America/New_York", flag: "🇺🇸", workStart: 8, workEnd: 18 },
-    { name: "Costa Rica", tz: "America/Costa_Rica", flag: "🇨🇷", workStart: 8, workEnd: 17 },
-    { name: "Argentina", tz: "America/Argentina/Buenos_Aires", flag: "🇦🇷", workStart: 9, workEnd: 18 },
-    { name: "Londres", tz: "Europe/London", flag: "🇬🇧", workStart: 8, workEnd: 17 },
-    { name: "España", tz: "Europe/Madrid", flag: "🇪🇸", workStart: 8, workEnd: 17 },
-    { name: "Polonia", tz: "Europe/Warsaw", flag: "🇵🇱", workStart: 8, workEnd: 17 },
-    { name: "India", tz: "Asia/Kolkata", flag: "🇮🇳", workStart: 12, workEnd: 21 },
-    { name: "Filipinas", tz: "Asia/Manila", flag: "🇵🇭", workStart: 15, workEnd: 24 }
-  ];
-  
-  const clocksEl = document.getElementById("clocks");
+  <script>
+    const MAX_LOCATIONS = 9;
+    const STORAGE_KEY = "team-hours-locations-v2";
+    const DEFAULT_WORK_START = 8 * 60;
+    const DEFAULT_WORK_END = 17 * 60;
+    const DEFAULT_TIMEZONES = [
+      "America/New_York",
+      "America/Costa_Rica",
+      "America/Argentina/Buenos_Aires",
+      "Europe/London",
+      "Europe/Madrid",
+      "Asia/Kolkata"
+    ];
 
-  const clocks = locations.map(loc => {
-    const formatter = new Intl.DateTimeFormat("es-ES", {
-      timeZone: loc.tz,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    });
-
-    const row = document.createElement("div");
-    row.className = "clock";
-
-    row.innerHTML = `
-      <div class="place">${loc.flag} ${loc.name}</div>
-      <div class="tz">${loc.tz}</div>
-      <div class="time">--:--:--</div>
-      <div class="work-status"></div>
-    `;
-
-    clocksEl.appendChild(row);
-
-    return {
-      formatter,
-      timeEl: row.querySelector(".time"),
-      statusEl: row.querySelector(".work-status"),
-      workStart: loc.workStart,
-      workEnd: loc.workEnd,
-      tz: loc.tz
+    const timezoneAliases = {
+      "America/New_York": "united states usa us",
+      "America/Chicago": "united states usa us",
+      "America/Denver": "united states usa us",
+      "America/Los_Angeles": "united states usa us",
+      "Pacific/Honolulu": "united states usa us hawaii",
+      "Europe/London": "united kingdom uk england great britain",
+      "Asia/Tokyo": "japan",
+      "Asia/Seoul": "south korea korea",
+      "Asia/Kolkata": "india",
+      "Europe/Paris": "france",
+      "Europe/Berlin": "germany",
+      "Europe/Rome": "italy",
+      "Europe/Madrid": "spain",
+      "Europe/Warsaw": "poland",
+      "America/Toronto": "canada",
+      "America/Vancouver": "canada",
+      "America/Mexico_City": "mexico",
+      "America/Sao_Paulo": "brazil",
+      "America/Bogota": "colombia",
+      "America/Lima": "peru",
+      "America/Santiago": "chile",
+      "America/Montevideo": "uruguay",
+      "America/Asuncion": "paraguay",
+      "America/La_Paz": "bolivia",
+      "America/Caracas": "venezuela",
+      "Africa/Cairo": "egypt",
+      "Africa/Johannesburg": "south africa",
+      "Africa/Nairobi": "kenya",
+      "Asia/Dubai": "united arab emirates uae",
+      "Asia/Singapore": "singapore",
+      "Asia/Manila": "philippines",
+      "Asia/Bangkok": "thailand",
+      "Asia/Jakarta": "indonesia",
+      "Australia/Sydney": "australia",
+      "Pacific/Auckland": "new zealand"
     };
-  });
 
-  function update() {
-    const now = new Date();
-    
-    clocks.forEach(clock => {
-      clock.timeEl.textContent = clock.formatter.format(now);
-      
-      const hourFormatter = new Intl.DateTimeFormat("es-ES", {
-        timeZone: clock.tz,
-        hour: "numeric",
-        minute: "numeric",
+    const clocksEl = document.getElementById("clocks");
+    const locationSearchEl = document.getElementById("locationSearch");
+    const locationSelectEl = document.getElementById("locationSelect");
+    const addLocationBtnEl = document.getElementById("addLocationBtn");
+    const limitInfoEl = document.getElementById("limitInfo");
+
+    function minutesToTime(value) {
+      const normalized = ((value % 1440) + 1440) % 1440;
+      const hours = String(Math.floor(normalized / 60)).padStart(2, "0");
+      const minutes = String(normalized % 60).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+
+    function timeToMinutes(value) {
+      const [h, m] = value.split(":").map(Number);
+      return (h * 60) + m;
+    }
+
+    function isInWindow(current, start, end) {
+      if (start <= end) return current >= start && current < end;
+      return current >= start || current < end;
+    }
+
+    function getMinutesInTimezone(now, timeZone) {
+      const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone,
+        hour: "2-digit",
+        minute: "2-digit",
         hour12: false
-      });
-      
-      const timeStr = hourFormatter.format(now);
-      const [currentHour, currentMinute] = timeStr.split(":").map(Number);
-      const currentTimeInMinutes = currentHour * 60 + currentMinute;
-      const workStartInMinutes = clock.workStart * 60;
-      const workEndInMinutes = clock.workEnd * 60;
-      
-      // Verificar si está en horario laboral
-      if (currentHour >= clock.workStart && currentHour < clock.workEnd) {
-        clock.timeEl.classList.add("working");
-        
-        // Calcular cuánto falta para que termine
-        const minutesUntilEnd = workEndInMinutes - currentTimeInMinutes;
-        const hoursUntilEnd = Math.floor(minutesUntilEnd / 60);
-        const minsUntilEnd = minutesUntilEnd % 60;
-        
-        if (hoursUntilEnd > 0) {
-          clock.statusEl.textContent = `Ends in: ${hoursUntilEnd}h ${minsUntilEnd}m`;
-        } else {
-          clock.statusEl.textContent = `Ends in: ${minsUntilEnd}m`;
-        }
-      } else {
-        clock.timeEl.classList.remove("working");
-        
-        // Calcular cuánto falta para que empiece
-        let minutesUntilStart;
-        if (currentHour < clock.workStart) {
-          // Mismo día
-          minutesUntilStart = workStartInMinutes - currentTimeInMinutes;
-        } else {
-          // Próximo día
-          minutesUntilStart = (24 * 60 - currentTimeInMinutes) + workStartInMinutes;
-        }
-        
-        const hoursUntilStart = Math.floor(minutesUntilStart / 60);
-        const minsUntilStart = minutesUntilStart % 60;
-        
-        if (hoursUntilStart > 0) {
-          clock.statusEl.textContent = `Starts in: ${hoursUntilStart}h ${minsUntilStart}m`;
-        } else {
-          clock.statusEl.textContent = `Starts in: ${minsUntilStart}m`;
-        }
+      }).formatToParts(now);
+      const hour = Number(parts.find(p => p.type === "hour")?.value || 0);
+      const minute = Number(parts.find(p => p.type === "minute")?.value || 0);
+      return (hour * 60) + minute;
+    }
+
+    function formatMinutes(value) {
+      const hours = Math.floor(value / 60);
+      const minutes = value % 60;
+      return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    }
+
+    function timezoneToLabel(tz) {
+      return tz.split("/").map(part => part.replace(/_/g, " ")).join(" - ");
+    }
+
+    function buildLocationCatalog() {
+      const allTimezones = typeof Intl.supportedValuesOf === "function"
+        ? Intl.supportedValuesOf("timeZone")
+        : DEFAULT_TIMEZONES;
+
+      return allTimezones
+        .map(tz => {
+          const label = timezoneToLabel(tz);
+          const extra = timezoneAliases[tz] || "";
+          return {
+            name: label,
+            tz,
+            workStart: DEFAULT_WORK_START,
+            workEnd: DEFAULT_WORK_END,
+            searchText: `${label} ${tz} ${extra}`.toLowerCase()
+          };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const locationCatalog = buildLocationCatalog();
+    const locationMap = new Map(locationCatalog.map(loc => [loc.tz, loc]));
+
+    function normalizeStoredList(raw) {
+      if (!Array.isArray(raw)) return [];
+      return raw
+        .filter(item => item && typeof item.name === "string" && typeof item.tz === "string")
+        .slice(0, MAX_LOCATIONS)
+        .map(item => ({
+          name: item.name,
+          tz: item.tz,
+          workStart: Number.isFinite(item.workStart) ? item.workStart : DEFAULT_WORK_START,
+          workEnd: Number.isFinite(item.workEnd) ? item.workEnd : DEFAULT_WORK_END
+        }));
+    }
+
+    function buildDefaultLocations() {
+      return DEFAULT_TIMEZONES
+        .map(tz => locationMap.get(tz))
+        .filter(Boolean)
+        .map(loc => ({ ...loc }));
+    }
+
+    function loadLocations() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return buildDefaultLocations();
+      try {
+        const parsed = JSON.parse(saved);
+        const normalized = normalizeStoredList(parsed);
+        if (!normalized.length) return buildDefaultLocations();
+        return normalized.map(savedLoc => {
+          const catalogLoc = locationMap.get(savedLoc.tz);
+          const name = catalogLoc ? catalogLoc.name : savedLoc.name;
+          return { ...savedLoc, name };
+        });
+      } catch {
+        return buildDefaultLocations();
       }
+    }
+
+    function saveLocations() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(locations));
+    }
+
+    let locations = loadLocations();
+    let clocks = [];
+    let filteredCatalog = [];
+
+    function refreshAddControl() {
+      const usedTz = new Set(locations.map(loc => loc.tz));
+      const query = locationSearchEl.value.trim().toLowerCase();
+      const available = locationCatalog.filter(loc => !usedTz.has(loc.tz));
+      filteredCatalog = query
+        ? available.filter(loc => loc.searchText.includes(query))
+        : available;
+
+      locationSelectEl.innerHTML = "";
+      filteredCatalog.slice(0, 250).forEach(loc => {
+        const option = document.createElement("option");
+        option.value = loc.tz;
+        option.textContent = loc.name;
+        locationSelectEl.appendChild(option);
+      });
+
+      const hasSpace = locations.length < MAX_LOCATIONS;
+      const hasOptions = filteredCatalog.length > 0;
+      locationSearchEl.disabled = !hasSpace;
+      locationSelectEl.disabled = !hasSpace || !hasOptions;
+      addLocationBtnEl.disabled = !hasSpace || !hasOptions;
+      limitInfoEl.textContent = `${locations.length}/${MAX_LOCATIONS} locations`;
+    }
+
+    function renderClocks() {
+      clocksEl.innerHTML = "";
+      clocks = locations.map((loc, index) => {
+        const formatter = new Intl.DateTimeFormat("en-GB", {
+          timeZone: loc.tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        });
+
+        const row = document.createElement("div");
+        row.className = "clock";
+        row.innerHTML = `
+          <div class="place">${loc.name}</div>
+          <div class="tz">${loc.tz}</div>
+          <div class="time">--:--:--</div>
+          <div class="work-status"></div>
+          <div class="work-controls">
+            <label>Start
+              <input class="work-start" type="time" step="1800" value="${minutesToTime(loc.workStart)}">
+            </label>
+            <label>End
+              <input class="work-end" type="time" step="1800" value="${minutesToTime(loc.workEnd)}">
+            </label>
+            <button class="remove-btn" type="button">Remove</button>
+          </div>
+        `;
+
+        const startInput = row.querySelector(".work-start");
+        const endInput = row.querySelector(".work-end");
+        const removeBtn = row.querySelector(".remove-btn");
+
+        startInput.addEventListener("change", e => {
+          locations[index].workStart = timeToMinutes(e.target.value);
+          saveLocations();
+          update();
+        });
+
+        endInput.addEventListener("change", e => {
+          locations[index].workEnd = timeToMinutes(e.target.value);
+          saveLocations();
+          update();
+        });
+
+        removeBtn.addEventListener("click", () => {
+          locations.splice(index, 1);
+          saveLocations();
+          renderClocks();
+          refreshAddControl();
+          update();
+        });
+
+        clocksEl.appendChild(row);
+
+        return {
+          formatter,
+          timeEl: row.querySelector(".time"),
+          statusEl: row.querySelector(".work-status"),
+          get data() {
+            return locations[index];
+          }
+        };
+      });
+    }
+
+    function update() {
+      const now = new Date();
+      clocks.forEach(clock => {
+        const data = clock.data;
+        if (!data) return;
+
+        clock.timeEl.textContent = clock.formatter.format(now);
+        const currentMinutes = getMinutesInTimezone(now, data.tz);
+        const start = data.workStart;
+        const end = data.workEnd;
+        const thirtyBeforeStart = (start - 30 + 1440) % 1440;
+        const thirtyAfterEnd = (end + 30) % 1440;
+        const isWorking = isInWindow(currentMinutes, start, end);
+        const isNearStart = isInWindow(currentMinutes, thirtyBeforeStart, start);
+        const isNearEnd = isInWindow(currentMinutes, end, thirtyAfterEnd);
+        const minutesUntilStart = (start - currentMinutes + 1440) % 1440;
+        const minutesSinceEnd = (currentMinutes - end + 1440) % 1440;
+        const minutesUntilEnd = (end - currentMinutes + 1440) % 1440;
+
+        clock.timeEl.classList.remove("working", "near-shift");
+
+        if (isWorking) {
+          clock.timeEl.classList.add("working");
+          clock.statusEl.textContent = `Ends in: ${formatMinutes(minutesUntilEnd)}`;
+        } else if (isNearStart || isNearEnd) {
+          clock.timeEl.classList.add("near-shift");
+          clock.statusEl.textContent = isNearStart
+            ? `Starts in: ${formatMinutes(minutesUntilStart)}`
+            : `Ended: ${formatMinutes(minutesSinceEnd)} ago`;
+        } else {
+          clock.statusEl.textContent = `Starts in: ${formatMinutes(minutesUntilStart)}`;
+        }
+      });
+    }
+
+    locationSearchEl.addEventListener("input", refreshAddControl);
+
+    addLocationBtnEl.addEventListener("click", () => {
+      if (locations.length >= MAX_LOCATIONS) return;
+      const selectedTz = locationSelectEl.value;
+      const selectedLocation = locationMap.get(selectedTz);
+      if (!selectedLocation) return;
+      locations.push({ ...selectedLocation });
+      saveLocations();
+      renderClocks();
+      refreshAddControl();
+      update();
     });
-  }
 
-  update();
-  setInterval(update, 1000);
-</script>
-
+    renderClocks();
+    refreshAddControl();
+    update();
+    setInterval(update, 1000);
+  </script>
 </body>
 </html>
